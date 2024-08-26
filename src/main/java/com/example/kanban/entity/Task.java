@@ -20,6 +20,6 @@ public class Task {
     private String description;
     private Instant dateTimeStart;
     private Instant dateTimeFinish;
-    private TaskStatus status;  // Changed to use enum
+    private TaskStatus status;
     private TaskPriority priority;
 }
