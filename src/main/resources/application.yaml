@@ -1,0 +1,17 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /kanban
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:5432/kanban"
+    username: postgres
+    password: csuitk15
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+#jwt:
+#  signerKey: "QtVu58YwMohASl55d0lW437nLETddk/m6dfyk0HiX7SmvS+sHq7U53dsSuCvKg+Q"
