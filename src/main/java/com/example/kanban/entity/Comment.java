@@ -1,9 +1,6 @@
 package com.example.kanban.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.Instant;
@@ -16,4 +13,12 @@ public class Comment {
     private String id;
     private String content;
     private Instant dateTimeComment;
+
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "taskId", nullable = false)
+    private Task task;
 }
