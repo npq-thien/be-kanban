@@ -70,6 +70,11 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.7.3</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-crypto</artifactId>
+			<version>6.3.0</version>
+		</dependency>
 <!--		Access to Swagger UI: swagger-ui/index.html -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
