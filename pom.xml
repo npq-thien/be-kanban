@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>22</java.version>
+		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -69,10 +70,23 @@
 			<artifactId>postgresql</artifactId>
 			<version>42.7.3</version>
 		</dependency>
+<!--		Access to Swagger UI: swagger-ui/index.html -->
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.6.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${org.mapstruct.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct-processor</artifactId>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 
 

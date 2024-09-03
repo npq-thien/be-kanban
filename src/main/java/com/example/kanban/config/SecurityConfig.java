@@ -13,9 +13,9 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/swagger-ui/**",  // Swagger UI page
             "/v3/api-docs/**",   // OpenAPI docs endpoint
-            "/swagger-resources/**", // Swagger resources
-            "/webjars/**", // Webjars for Swagger UI
-            "/users", "/auth/token", "/auth/introspect" // Other public endpoints
+            "/swagger-resources/**",
+            "/webjars/**",
+            "/api/user" // Other public endpoints
     };
 
     @Bean
