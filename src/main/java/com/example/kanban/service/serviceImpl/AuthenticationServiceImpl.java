@@ -2,6 +2,7 @@ package com.example.kanban.service.serviceImpl;
 
 import com.example.kanban.dto.request.AuthenticationRequest;
 import com.example.kanban.dto.response.AuthenticationResponse;
+import com.example.kanban.entity.User;
 import com.example.kanban.exception.BusinessException;
 import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.repository.UserRepository;
@@ -48,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(request.getUsername())
+        User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new BusinessException("User not found", ErrorCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
