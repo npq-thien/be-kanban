@@ -13,5 +13,5 @@ spring:
       ddl-auto: update
     show-sql: true
 
-#jwt:
-#  signerKey: "QtVu58YwMohASl55d0lW437nLETddk/m6dfyk0HiX7SmvS+sHq7U53dsSuCvKg+Q"
+jwt:
+  signerKey: "cq9rJup0g+aG3M+mbgXGLi4JW9SMO0ZJbtm2IwKSTNRFmFOXLqo5+gXrmEhJZb3/"

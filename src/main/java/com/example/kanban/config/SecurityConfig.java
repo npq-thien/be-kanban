@@ -15,7 +15,7 @@ public class SecurityConfig {
             "/v3/api-docs/**",   // OpenAPI docs endpoint
             "/swagger-resources/**",
             "/webjars/**",
-            "/api/user/**" // Other public endpoints
+            "/api/user/**", "/api/auth/**" // Other public endpoints
     };
 
     @Bean

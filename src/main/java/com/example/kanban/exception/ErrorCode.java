@@ -2,7 +2,7 @@ package com.example.kanban.exception;
 
 public enum ErrorCode {
     // Authentication Errors
-    INVALID_CREDENTIALS,
+    UNAUTHENTICATED,
     TOKEN_EXPIRED,
     ACCESS_DENIED,
     USER_NOT_AUTHORIZED,
