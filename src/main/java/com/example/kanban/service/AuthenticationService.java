@@ -9,5 +9,5 @@ import java.text.ParseException;
 public interface AuthenticationService {
     boolean introspect(String token) throws JOSEException, ParseException;
     AuthenticationResponse authenticate(AuthenticationRequest request);
-    String generateToken(String username);
+    String generateToken(String userId, String displayName);
 }

@@ -19,6 +19,7 @@ public class Task {
     private String description;
     private Instant dateTimeStart;
     private Instant dateTimeFinish;
+    private boolean isPublic;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;

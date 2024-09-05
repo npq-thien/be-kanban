@@ -12,10 +12,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.NonFinal;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!authenticated)
             throw new BusinessException("Unauthenticated", ErrorCode.UNAUTHENTICATED);
 
-        String token = generateToken(request.getUsername());
+        String token = generateToken(user.getId(), user.getDisplayName());
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -65,15 +62,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String generateToken(String username) {
+    public String generateToken(String userId, String displayName) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(userId)
+                .claim("displayName", displayName)
                 .issuer("kanban")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(7, ChronoUnit.DAYS).toEpochMilli()
+                        Instant.now().plus(1, ChronoUnit.DAYS).toEpochMilli()
                 ))
                 .build();
 
