@@ -37,8 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
+        boolean verified = signedJWT.verify(verifier);
 
         return verified && expirationTime.after(new Date());
     }
@@ -63,8 +62,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String generateToken(User user) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getId())
                 .claim("displayName", user.getDisplayName())
@@ -76,14 +73,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 ))
                 .build();
 
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
         JWSObject jwsObject = new JWSObject(header, payload);
 
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject.serialize();
-
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }

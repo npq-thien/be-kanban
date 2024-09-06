@@ -4,6 +4,7 @@ import com.example.kanban.dto.request.AuthenticationRequest;
 import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.service.AuthenticationService;
 import com.nimbusds.jose.JOSEException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/introspect")
-    ResponseEntity<ApiResponse> introspect(String token) throws ParseException, JOSEException {
+    ResponseEntity<ApiResponse> introspect(@RequestBody String token) throws ParseException, JOSEException {
         boolean isValid = authenticationService.introspect(token);
         String validateMessage = isValid ? "Token is valid" : "Token is invalid";
 

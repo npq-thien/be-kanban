@@ -3,7 +3,10 @@ package com.example.kanban.entity;
 import com.example.kanban.entity.enums.TaskPriority;
 import com.example.kanban.entity.enums.TaskStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedBy;
 
 import java.time.Instant;
@@ -12,6 +15,9 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

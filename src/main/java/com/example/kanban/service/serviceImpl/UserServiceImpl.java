@@ -29,10 +29,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Username already exists", ErrorCode.USER_ALREADY_EXISTS);
         }
-        System.out.println("REQUEST HERE" + request.toString());
 
         User user = userMapper.userCreateRequestToUser(request);
-        System.out.println("INFO HERE" + user.toString());
+
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);

@@ -3,15 +3,18 @@ package com.example.kanban.entity;
 import com.example.kanban.entity.enums.TaskStatus;
 import com.example.kanban.entity.enums.UserRole;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Users")
 public class User {
     @Id
