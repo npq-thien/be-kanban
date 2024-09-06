@@ -1,4 +1,4 @@
-package com.example.kanban.config;
+package com.example.kanban.config.security;
 
 import com.example.kanban.entity.User;
 import com.example.kanban.repository.UserRepository;

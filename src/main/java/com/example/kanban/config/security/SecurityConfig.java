@@ -1,6 +1,5 @@
-package com.example.kanban.config;
+package com.example.kanban.config.security;
 
-import com.example.kanban.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

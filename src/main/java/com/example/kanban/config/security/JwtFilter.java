@@ -1,8 +1,7 @@
-package com.example.kanban.filter;
+package com.example.kanban.config.security;
 
 import com.example.kanban.service.AuthenticationService;
 import com.example.kanban.service.serviceImpl.AuthenticationServiceImpl;
-import com.example.kanban.config.CustomUserDetailsService;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -52,6 +52,6 @@ public class AuthenticationController {
                 .timestamp(new Date())
                 .build();
 
-        return ResponseEntity.accepted().body(apiResponse);
+        return ResponseEntity.ok(apiResponse);
     }
 }

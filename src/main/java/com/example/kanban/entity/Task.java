@@ -13,11 +13,11 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -26,7 +26,7 @@ public class Task {
     private String description;
     private Instant dateTimeStart;
     private Instant dateTimeFinish;
-    private boolean isPublic;
+    private Boolean isPublic;
 
     @CreatedBy
     private String creatorDisplayName;
@@ -37,9 +37,8 @@ public class Task {
     private TaskPriority priority;
 
 
-
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", nullable = true)
     private User user;
 
     @OneToMany(mappedBy = "task")

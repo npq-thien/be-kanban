@@ -2,18 +2,24 @@ package com.example.kanban.dto.response;
 
 import com.example.kanban.entity.enums.TaskPriority;
 import com.example.kanban.entity.enums.TaskStatus;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
-public class TaskReponse {
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TaskResponse {
     private String id;
     private String name;
     private String description;
     private Instant dateTimeStart;
     private Instant dateTimeFinish;
-    private boolean isPublic;
+    private Boolean isPublic;
     private String creatorDisplayName;
     private TaskStatus status;
     private TaskPriority priority;
