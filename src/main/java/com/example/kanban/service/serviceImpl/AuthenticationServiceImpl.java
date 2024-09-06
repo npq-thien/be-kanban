@@ -54,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!authenticated)
             throw new BusinessException("Unauthenticated", ErrorCode.UNAUTHENTICATED);
 
-        String token = generateToken(user.getId(), user.getDisplayName());
+        String token = generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(token)
@@ -62,12 +62,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String generateToken(String userId, String displayName) {
+    public String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(userId)
-                .claim("displayName", displayName)
+                .subject(user.getId())
+                .claim("displayName", user.getDisplayName())
+                .claim("role", user.getRole())
                 .issuer("kanban")
                 .issueTime(new Date())
                 .expirationTime(new Date(

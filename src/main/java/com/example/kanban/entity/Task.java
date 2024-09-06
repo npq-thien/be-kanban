@@ -4,6 +4,7 @@ import com.example.kanban.entity.enums.TaskPriority;
 import com.example.kanban.entity.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,21 +22,20 @@ public class Task {
     private Instant dateTimeFinish;
     private boolean isPublic;
 
+    @CreatedBy
+    private String creatorDisplayName;
+
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
 
+
+
     @ManyToOne
-    @JoinColumn(name = "taskListId", nullable = false)
-    private TaskList taskList;
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;
-
-    @ManyToMany
-    @JoinTable(name = "Task_User",
-    joinColumns = @JoinColumn(name = "taskId"),
-    inverseJoinColumns = @JoinColumn(name = "userId"))
-    private Set<User> users;
 }

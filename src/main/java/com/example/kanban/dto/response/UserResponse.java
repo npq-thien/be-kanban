@@ -1,5 +1,6 @@
 package com.example.kanban.dto.response;
 
+import com.example.kanban.entity.enums.UserRole;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,4 +11,5 @@ public class UserResponse {
     private String username;
     private String password;
     private String displayName;
+    private String role;
 }
