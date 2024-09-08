@@ -1,5 +1,6 @@
 package com.example.kanban.service;
 
+import com.example.kanban.config.security.AuthUser;
 import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
@@ -10,5 +11,5 @@ import java.util.List;
 public interface TaskService {
     TaskResponse createTask(TaskCreateRequest request);
     ApiResponse getAllTasks();
-    TaskResponse updateTask(String taskId, TaskUpdateRequest request);
+    TaskResponse updateTask(String taskId, TaskUpdateRequest request, AuthUser currentUser);
 }

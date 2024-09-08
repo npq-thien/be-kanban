@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,12 +64,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskResponse updateTask(String taskId, TaskUpdateRequest request) {
+    public TaskResponse updateTask(String taskId, TaskUpdateRequest request, AuthUser currentUser) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
 
-        Task updatedTask = taskMapper.taskUpdateRequestToTask(request);
-        taskRepository.save(task);
+        if (!task.getCreatedByUsername().equals(currentUser.getUsername())) {
+            throw new BusinessException("This user does not have permission to update this task.", ErrorCode.UNAUTHORIZED);
+        }
+
+        taskMapper.updateTaskFromRequest(request, task);
+        Task updatedTask = taskRepository.save(task);
 
         return taskMapper.taskToTaskResponse(updatedTask);
     }

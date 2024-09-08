@@ -12,8 +12,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,10 +50,9 @@ public class TaskController {
     ResponseEntity<ApiResponse> updateTask(@PathVariable String taskId, @RequestBody @Valid TaskUpdateRequest request) {
         AuthUser currentUser = auditorAware.getCurrentAuditor()
                 .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
-        System.out.println("REQUEST" + request);
-        System.out.println("LOG HERE" + currentUser.getUsername() + ' ' + request.getCreatedByUsername());
-        if (currentUser.getUsername().equals(request.getCreatedByUsername())) {
-            TaskResponse taskResponse = taskService.updateTask(taskId, request);
+
+        try {
+            TaskResponse taskResponse = taskService.updateTask(taskId, request, currentUser);
 
             ApiResponse apiResponse = ApiResponse.builder()
                     .code(200)
@@ -59,8 +61,15 @@ public class TaskController {
                     .build();
 
             return ResponseEntity.ok(apiResponse);
-        } else {
-            throw new BusinessException("This user does not have permission to update this task", ErrorCode.UNAUTHORIZED);
+        } catch (BusinessException e) {
+            ApiResponse errorResponse = ApiResponse.builder()
+                    .code(200)
+                    .message("Update task failed")
+                    .data(e)
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponse);
         }
     }
 
