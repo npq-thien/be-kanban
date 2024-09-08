@@ -3,6 +3,7 @@ package com.example.kanban.config.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -18,27 +19,13 @@ public class SecurityConfig {
     @Autowired
     JwtFilter jwtFilter;
 
-
     private static final String[] PUBLIC_ENDPOINTS = {
             "/swagger-ui/**",  // Swagger UI page
             "/v3/api-docs/**",   // OpenAPI docs endpoint
-            "/swagger-resources/**",
-            "/webjars/**",
+            //"/swagger-resources/**",
+            //"/webjars/**",
             "/api/user/**", "/api/auth/**" // Other public endpoints
     };
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
-                .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .anyRequest().authenticated())
-                .cors(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return httpSecurity.build();
-    }
-
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -46,13 +33,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public WebMvcConfigurer webMvcConfigurer() {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .anyRequest().authenticated())
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
+    }
+
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("*")  // Adjust this as needed
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("*")
                         .allowedHeaders("*");
             }
         };

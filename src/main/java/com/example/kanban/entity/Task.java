@@ -11,7 +11,6 @@ import org.springframework.data.annotation.CreatedBy;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -30,6 +29,10 @@ public class Task {
 
     @CreatedBy
     private String creatorDisplayName;
+
+    @CreatedBy
+    @Column(updatable = false)
+    private String createdByUsername;
 
     @Enumerated(EnumType.STRING)
     private TaskStatus status;

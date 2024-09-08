@@ -3,6 +3,7 @@ package com.example.kanban.exception;
 public enum ErrorCode {
     // Authentication Errors
     UNAUTHENTICATED,
+    UNAUTHORIZED,
     TOKEN_EXPIRED,
     ACCESS_DENIED,
     USER_NOT_AUTHORIZED,
@@ -15,13 +16,10 @@ public enum ErrorCode {
 
     // Resource Not Found
     USER_NOT_FOUND,
-    CARD_NOT_FOUND,
-    BOARD_NOT_FOUND,
-    PROJECT_NOT_FOUND,
+    TASK_NOT_FOUND,
 
     // Conflict Errors
     USER_ALREADY_EXISTS,
-    CARD_ALREADY_EXISTS,
     RESOURCE_ALREADY_EXISTS,
 
     // Database and System Errors

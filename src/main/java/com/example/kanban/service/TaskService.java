@@ -1,8 +1,14 @@
 package com.example.kanban.service;
 
 import com.example.kanban.dto.request.TaskCreateRequest;
+import com.example.kanban.dto.request.TaskUpdateRequest;
+import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.dto.response.TaskResponse;
 
+import java.util.List;
+
 public interface TaskService {
-    public TaskResponse createTask(TaskCreateRequest request);
+    TaskResponse createTask(TaskCreateRequest request);
+    ApiResponse getAllTasks();
+    TaskResponse updateTask(String taskId, TaskUpdateRequest request);
 }

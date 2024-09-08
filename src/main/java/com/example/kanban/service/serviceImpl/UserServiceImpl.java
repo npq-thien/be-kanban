@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 
         // Create a map or a custom response object to include the user count
         Map<String, Object> responseData = new HashMap<>();
-        responseData.put("userCount", userResponseDTO.size());
+        responseData.put("count", userResponseDTO.size());
         responseData.put("users", userResponseDTO);
 
         return ApiResponse.builder()

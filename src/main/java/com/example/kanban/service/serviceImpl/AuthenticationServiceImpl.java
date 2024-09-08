@@ -84,4 +84,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public JWTClaimsSet parseToken(String token) throws ParseException {
+        SignedJWT signedJWT = SignedJWT.parse(token);
+        return signedJWT.getJWTClaimsSet();
+    }
 }
