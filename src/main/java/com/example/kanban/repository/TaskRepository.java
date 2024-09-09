@@ -12,4 +12,6 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, String> {
     @Query("SELECT t FROM Task t WHERE t.createdByUsername = :username OR t.isPublic = true")
     List<Task> findAllByCreatedByUsernameOrPublic(@Param("username") String username);
+    @Query("SELECT t FROM Task t WHERE t.assignedUser.id = :userId OR t.isPublic = true")
+    List<Task> findAllByAssignedUsernameOrPublic(@Param("userId") String userId);
 }

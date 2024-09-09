@@ -68,9 +68,37 @@ public class TaskController {
             return ResponseEntity.ok(apiResponse);
         } catch (BusinessException e) {
             ApiResponse errorResponse = ApiResponse.builder()
-                    .code(200)
+                    .code(1000)
                     .message("Update task failed")
-                    .data(e)
+                    .data(e.getMessage())
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponse);
+        }
+    }
+
+    @PutMapping("/take/{taskId}")
+    ResponseEntity<ApiResponse> takeTask(@PathVariable String taskId) {
+        AuthUser currentUser = auditorAware.getCurrentAuditor()
+                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
+
+        try {
+            TaskResponse taskResponse = taskService.takeTask(taskId, currentUser);
+
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .code(200)
+                    .message("Take task successfully")
+                    .data(taskResponse)
+                    .build();
+
+            return ResponseEntity.ok(apiResponse);
+
+        } catch (BusinessException e) {
+            ApiResponse errorResponse = ApiResponse.builder()
+                    .code(1000)
+                    .message("Update task failed")
+                    .data(e.getMessage())
                     .build();
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

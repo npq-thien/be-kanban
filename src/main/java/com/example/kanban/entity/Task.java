@@ -41,8 +41,8 @@ public class Task {
 
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = true)
-    private User user;
+    @JoinColumn(name = "assignedUserId", nullable = true)
+    private User assignedUser;
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;

@@ -21,6 +21,7 @@ public enum ErrorCode {
     // Conflict Errors
     USER_ALREADY_EXISTS,
     RESOURCE_ALREADY_EXISTS,
+    TASK_ALREADY_TAKEN,
 
     // Database and System Errors
     DATABASE_ERROR,

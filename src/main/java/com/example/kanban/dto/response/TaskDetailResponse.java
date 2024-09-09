@@ -1,19 +1,14 @@
 package com.example.kanban.dto.response;
 
+import com.example.kanban.entity.Comment;
+import com.example.kanban.entity.User;
 import com.example.kanban.entity.enums.TaskPriority;
 import com.example.kanban.entity.enums.TaskStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TaskResponse {
+public class TaskDetailResponse {
     private String id;
     private String name;
     private String description;
@@ -24,5 +19,6 @@ public class TaskResponse {
     private String createdByUsername;
     private TaskStatus status;
     private TaskPriority priority;
-    private String assignedUserId;
+    private User assignedUser;
+    private List<Comment> comments;
 }

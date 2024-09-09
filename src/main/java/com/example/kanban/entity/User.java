@@ -27,9 +27,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    @OneToMany(mappedBy = "assignedUser")
+    private List<Task> tasks;
+
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "user")
-    private List<Task> tasks;
 }

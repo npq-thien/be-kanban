@@ -21,7 +21,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBusinessException(BusinessException exception) {
         HttpStatus status = switch (exception.getErrorCode()) {
             // Map ErrorCode to HTTP Status
-            case USER_ALREADY_EXISTS, RESOURCE_ALREADY_EXISTS -> HttpStatus.CONFLICT;
+            case USER_ALREADY_EXISTS, RESOURCE_ALREADY_EXISTS, TASK_ALREADY_TAKEN -> HttpStatus.CONFLICT;
             case USER_NOT_FOUND, TASK_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case UNAUTHENTICATED, UNAUTHORIZED, TOKEN_EXPIRED, ACCESS_DENIED, USER_NOT_AUTHORIZED -> HttpStatus.UNAUTHORIZED;
             case VALIDATION_FAILED, MISSING_REQUIRED_FIELD, INVALID_FIELD_FORMAT, PASSWORD_TOO_WEAK ->
