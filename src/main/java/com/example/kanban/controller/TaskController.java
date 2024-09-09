@@ -106,4 +106,32 @@ public class TaskController {
         }
     }
 
+    @PutMapping("/drop/{taskId}")
+    ResponseEntity<ApiResponse> dropTask(@PathVariable String taskId) {
+        AuthUser currentUser = auditorAware.getCurrentAuditor()
+                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
+
+        try {
+            TaskResponse taskResponse = taskService.dropTask(taskId, currentUser);
+
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .code(200)
+                    .message("Drop task successfully")
+                    .data(taskResponse)
+                    .build();
+
+            return ResponseEntity.ok(apiResponse);
+
+        } catch (BusinessException e) {
+            ApiResponse errorResponse = ApiResponse.builder()
+                    .code(1000)
+                    .message("Drop task failed")
+                    .data(e.getMessage())
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponse);
+        }
+    }
+
 }

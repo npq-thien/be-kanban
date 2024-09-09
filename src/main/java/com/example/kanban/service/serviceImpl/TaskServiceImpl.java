@@ -131,4 +131,20 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.taskToTaskResponse(task);
     }
 
+    @Transactional
+    @Override
+    public TaskResponse dropTask(String taskId, AuthUser currentUser) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
+
+        if (!task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
+            throw new BusinessException("Cannot drop because this user hasn't been assigned this task", ErrorCode.USER_NOT_ASSIGNED_TASK);
+        }
+
+        task.setAssignedUser(null);
+        taskRepository.save(task);
+
+        return taskMapper.taskToTaskResponse(task);
+    }
+
 }

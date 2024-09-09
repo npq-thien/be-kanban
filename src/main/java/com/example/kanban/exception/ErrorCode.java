@@ -30,5 +30,6 @@ public enum ErrorCode {
 
     // Business Logic Errors
     CANNOT_DELETE_ACTIVE_BOARD,
-    TASK_LIMIT_EXCEEDED
+    TASK_LIMIT_EXCEEDED,
+    USER_NOT_ASSIGNED_TASK,
 }

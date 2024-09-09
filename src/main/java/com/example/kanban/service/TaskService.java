@@ -14,4 +14,5 @@ public interface TaskService {
     ApiResponse getUserTasks(String id);
     TaskResponse updateTask(String taskId, TaskUpdateRequest request, AuthUser currentUser);
     TaskResponse takeTask(String taskId, AuthUser currentUser);
+    TaskResponse dropTask(String taskId, AuthUser currentUser);
 }
