@@ -60,8 +60,8 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ApiResponse getAllTasks() {
-        List<TaskDetailResponse> listTasks = taskRepository.findAll()
-                .stream().map(taskMapper::taskToTaskDetailResponse).toList();
+        List<TaskResponse> listTasks = taskRepository.findAll()
+                .stream().map(taskMapper::taskToTaskResponse).toList();
 
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("count", listTasks.size());
@@ -100,7 +100,9 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
 
-        if (!task.getCreatedByUsername().equals(currentUser.getUsername())) {
+        // Only creator or assigned user can update task
+        if (!task.getCreatedByUsername().equals(currentUser.getUsername())
+                && !task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
             throw new BusinessException("This user does not have permission to update this task.", ErrorCode.UNAUTHORIZED);
         }
 

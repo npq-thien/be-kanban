@@ -25,4 +25,5 @@ public class TaskResponse {
     private TaskStatus status;
     private TaskPriority priority;
     private String assignedUserId;
+    private String assignedUserDisplayName;
 }

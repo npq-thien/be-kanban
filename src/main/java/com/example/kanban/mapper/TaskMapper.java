@@ -14,7 +14,9 @@ public interface TaskMapper {
     Task taskCreateRequestToTask(TaskCreateRequest request);
 
     @Mapping(source = "assignedUser.id", target = "assignedUserId")
+    @Mapping(source = "assignedUser.displayName", target = "assignedUserDisplayName")
     TaskResponse taskToTaskResponse(Task task);
+
     TaskDetailResponse taskToTaskDetailResponse(Task task);
 
     @Mapping(target = "id", ignore = true)
