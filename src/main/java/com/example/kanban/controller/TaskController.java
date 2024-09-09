@@ -10,13 +10,11 @@ import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +27,13 @@ public class TaskController {
     @GetMapping
     ResponseEntity<ApiResponse> getAllTasks() {
         ApiResponse apiResponse = taskService.getAllTasks();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/{userId}")
+    ResponseEntity<ApiResponse> getUserTasks(@PathVariable String userId) {
+        ApiResponse apiResponse = taskService.getUserTasks(userId);
 
         return ResponseEntity.ok(apiResponse);
     }

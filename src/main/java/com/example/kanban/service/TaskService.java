@@ -11,5 +11,6 @@ import java.util.List;
 public interface TaskService {
     TaskResponse createTask(TaskCreateRequest request);
     ApiResponse getAllTasks();
+    ApiResponse getUserTasks(String id);
     TaskResponse updateTask(String taskId, TaskUpdateRequest request, AuthUser currentUser);
 }
