@@ -136,9 +136,30 @@ public class TaskController {
     }
 
     @PutMapping("/move")
-    ResponseEntity<ApiResponse> dropTask(@RequestBody MoveTaskRequest request) {
-        
+    ResponseEntity<ApiResponse> dropTask(@RequestBody @Valid MoveTaskRequest request) {
+        AuthUser currentUser = auditorAware.getCurrentAuditor()
+                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
 
+        boolean taskResponse = taskService.moveTask(request, currentUser);
+
+        if (taskResponse) {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .code(200)
+                    .message("Move task successfully")
+                    .build();
+
+            return ResponseEntity.ok(apiResponse);
+
+        } else {
+            ApiResponse errorResponse = ApiResponse.builder()
+                    .code(1000)
+                    .message("Move task failed")
+                    .build();
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(errorResponse);
+        }
     }
 
 }

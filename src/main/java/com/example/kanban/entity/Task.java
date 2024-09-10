@@ -47,4 +47,14 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                ", name='" + name + '\'' +
+                ", isPublic=" + isPublic +
+                ", position=" + position +
+                ", status=" + status +
+                '}';
+    }
 }

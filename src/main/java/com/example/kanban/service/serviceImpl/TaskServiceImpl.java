@@ -5,7 +5,6 @@ import com.example.kanban.dto.request.MoveTaskRequest;
 import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
-import com.example.kanban.dto.response.TaskDetailResponse;
 import com.example.kanban.dto.response.TaskResponse;
 import com.example.kanban.entity.Task;
 import com.example.kanban.entity.User;
@@ -124,7 +123,7 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
 
         if (task.getAssignedUser() != null) {
-            throw new BusinessException("Task already taken by someone!", ErrorCode.TASK_ALREADY_TAKEN);
+            throw new BusinessException("The task has already been taken by someone!", ErrorCode.TASK_ALREADY_TAKEN);
         }
 
         User assignedUser = userRepository.findByUsername(currentUser.getUsername())
@@ -163,27 +162,46 @@ public class TaskServiceImpl implements TaskService {
             throw new BusinessException("This user does not have permission to move task.", ErrorCode.UNAUTHORIZED);
         }
 
-        int startPosition = request.getStartPosition();
         int overPosition = request.getOverPosition();
-        TaskStatus status = request.getStatus();
+        TaskStatus overStatus = request.getOverStatus();
 
-        // Move down
-        if (overPosition > startPosition) {
-            List<Task> tasksBetween = taskRepository.findByStatusAndPositionBetween(status, startPosition + 1, overPosition);
-
-            for (Task t : tasksBetween) {
-                t.setPosition(t.getPosition() - 1);
-                taskRepository.save(t);
-            }
-
-            task.setPosition(overPosition);
-            taskRepository.save(task);
-
-            return true;
-        } else if (overPosition < startPosition) {
-
+        if (overPosition < 0) {
             return false;
         }
-        return false;
+
+
+        //System.out.println("Position " + startPosition + ' ' + overPosition);
+
+
+        return true;
+    }
+
+    private void moveTaskUp(Task task, int startPosition, int overPosition, TaskStatus status) {
+        List<Task> tasksInRange = taskRepository.findByStatusAndPositionBetween(
+                status, overPosition, startPosition - 1
+        );
+
+        // Increment the position of all tasks in this range
+        for (Task t : tasksInRange) {
+            t.setPosition(t.getPosition() + 1);
+            taskRepository.save(t); // Save the updated position
+        }
+
+        // Set the moved task's position to the overPosition
+        task.setPosition(overPosition);
+        taskRepository.save(task);
+    }
+
+    private void moveTaskDown(Task task, int startPosition, int overPosition, TaskStatus status) {
+        List<Task> tasksBetween =
+                taskRepository.findByStatusAndPositionBetween(status, startPosition + 1, overPosition);
+
+        for (Task t : tasksBetween) {
+            t.setPosition(t.getPosition() - 1);
+            taskRepository.save(t);
+        }
+
+        task.setPosition(overPosition);
+        taskRepository.save(task);
     }
 }

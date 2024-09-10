@@ -10,11 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MoveTaskRequest {
     private String taskId;
-    //private String startId;
-    //private String overId;
     private int startPosition;
     private int overPosition;
-    private TaskStatus status;
-    //private TaskStatus startStatus;
-    //private TaskStatus overStatus;
+    private TaskStatus startStatus;
+    private TaskStatus overStatus;
 }
