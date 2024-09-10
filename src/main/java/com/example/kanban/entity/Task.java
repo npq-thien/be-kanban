@@ -26,6 +26,7 @@ public class Task {
     private Instant dateTimeStart;
     private Instant dateTimeFinish;
     private Boolean isPublic;
+    private int position; // Store task position in column
 
     @CreatedBy
     private String creatorDisplayName;

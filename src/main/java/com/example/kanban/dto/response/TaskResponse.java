@@ -23,6 +23,7 @@ public class TaskResponse {
     private String creatorDisplayName;
     private String createdByUsername;
     private TaskStatus status;
+    private int position;
     private TaskPriority priority;
     private String assignedUserId;
     private String assignedUserDisplayName;

@@ -1,6 +1,7 @@
 package com.example.kanban.service.serviceImpl;
 
 import com.example.kanban.config.security.AuthUser;
+import com.example.kanban.dto.request.MoveTaskRequest;
 import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
@@ -8,6 +9,7 @@ import com.example.kanban.dto.response.TaskDetailResponse;
 import com.example.kanban.dto.response.TaskResponse;
 import com.example.kanban.entity.Task;
 import com.example.kanban.entity.User;
+import com.example.kanban.entity.enums.TaskStatus;
 import com.example.kanban.exception.BusinessException;
 import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.mapper.TaskMapper;
@@ -45,6 +47,9 @@ public class TaskServiceImpl implements TaskService {
         newTask.setDateTimeStart(Instant.now());
         newTask.setCreatorDisplayName(currentUser.getDisplayName());
         newTask.setCreatedByUsername(currentUser.getUsername());
+
+        int maxPosition = taskRepository.findMaxPositionByStatus(request.getStatus());
+        newTask.setPosition(maxPosition + 1); // Set to highest position
 
         // Set assigned user to the creator if the task is private
         if (!request.getIsPublic()) {
@@ -147,4 +152,38 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.taskToTaskResponse(task);
     }
 
+    @Transactional
+    @Override
+    public boolean moveTask(MoveTaskRequest request, AuthUser currentUser) {
+        Task task = taskRepository.findById(request.getTaskId())
+                .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
+
+        // Only creator or assigned user can move task
+        if (!task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
+            throw new BusinessException("This user does not have permission to move task.", ErrorCode.UNAUTHORIZED);
+        }
+
+        int startPosition = request.getStartPosition();
+        int overPosition = request.getOverPosition();
+        TaskStatus status = request.getStatus();
+
+        // Move down
+        if (overPosition > startPosition) {
+            List<Task> tasksBetween = taskRepository.findByStatusAndPositionBetween(status, startPosition + 1, overPosition);
+
+            for (Task t : tasksBetween) {
+                t.setPosition(t.getPosition() - 1);
+                taskRepository.save(t);
+            }
+
+            task.setPosition(overPosition);
+            taskRepository.save(task);
+
+            return true;
+        } else if (overPosition < startPosition) {
+
+            return false;
+        }
+        return false;
+    }
 }

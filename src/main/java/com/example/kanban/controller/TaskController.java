@@ -1,6 +1,7 @@
 package com.example.kanban.controller;
 
 import com.example.kanban.config.security.AuthUser;
+import com.example.kanban.dto.request.MoveTaskRequest;
 import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
@@ -132,6 +133,12 @@ public class TaskController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(errorResponse);
         }
+    }
+
+    @PutMapping("/move")
+    ResponseEntity<ApiResponse> dropTask(@RequestBody MoveTaskRequest request) {
+        
+
     }
 
 }
