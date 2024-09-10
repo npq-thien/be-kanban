@@ -162,16 +162,37 @@ public class TaskServiceImpl implements TaskService {
             throw new BusinessException("This user does not have permission to move task.", ErrorCode.UNAUTHORIZED);
         }
 
+        int startPosition = request.getStartPosition();
         int overPosition = request.getOverPosition();
+        TaskStatus startStatus = request.getStartStatus();
         TaskStatus overStatus = request.getOverStatus();
-
-        if (overPosition < 0) {
-            return false;
-        }
 
 
         //System.out.println("Position " + startPosition + ' ' + overPosition);
 
+        // Move in 1 column
+        if (startStatus.equals(overStatus)) {
+            // Task not actually moved, nothing to do
+            if (overPosition == startPosition) {
+                return false;
+            }
+            // Move down
+            if (overPosition > startPosition) {
+                moveTaskDown(task, startPosition, overPosition, overStatus);
+            } else {
+                moveTaskUp(task, startPosition, overPosition, overStatus);
+            }
+        } else {
+            //Move to empty column
+            if (overPosition < 0) {
+                task.setPosition(0);
+                task.setStatus(overStatus);
+                taskRepository.save(task);
+                return true;
+            } else {
+                moveToTaskInAnotherColumn(task, overPosition, overStatus);
+            }
+        }
 
         return true;
     }
@@ -202,6 +223,25 @@ public class TaskServiceImpl implements TaskService {
         }
 
         task.setPosition(overPosition);
+        taskRepository.save(task);
+    }
+
+    private void moveToTaskInAnotherColumn(Task task, int overPosition, TaskStatus overStatus) {
+        List<Task> tasksInOverColumn = taskRepository.findByStatusOrderByPositionAsc(overStatus);
+
+        // Update task's status to the new column and set its position
+        task.setStatus(overStatus);
+        task.setPosition(overPosition);
+
+        // Iterate over the tasks in the target column and adjust their positions
+        for (Task t : tasksInOverColumn) {
+            if (t.getPosition() >= overPosition) {
+                t.setPosition(t.getPosition() + 1); // Shift down the tasks after the new task
+                taskRepository.save(t); // Save updated task position
+            }
+        }
+
+        // Save the moved task after adjusting other task positions
         taskRepository.save(task);
     }
 }
