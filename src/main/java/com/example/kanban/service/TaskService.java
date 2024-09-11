@@ -7,8 +7,6 @@ import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.dto.response.TaskResponse;
 
-import java.util.List;
-
 public interface TaskService {
     TaskResponse createTask(TaskCreateRequest request);
     ApiResponse getAllTasks();

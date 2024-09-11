@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
@@ -204,10 +203,9 @@ public class TaskServiceImpl implements TaskService {
         // Increment the position of all tasks in this range
         for (Task t : tasksInRange) {
             t.setPosition(t.getPosition() + 1);
-            taskRepository.save(t); // Save the updated position
+            taskRepository.save(t);
         }
 
-        // Set the moved task's position to the overPosition
         task.setPosition(overPosition);
         taskRepository.save(task);
     }
@@ -216,6 +214,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasksBetween =
                 taskRepository.findByStatusAndPositionBetween(status, startPosition + 1, overPosition);
 
+        // Decrement the position of all tasks in this range
         for (Task t : tasksBetween) {
             t.setPosition(t.getPosition() - 1);
             taskRepository.save(t);
@@ -227,7 +226,8 @@ public class TaskServiceImpl implements TaskService {
 
     private void moveTasksInStartColumnAfterTaskRemoval(int startPosition, TaskStatus startStatus) {
         // Fetch all tasks in the original column (startStatus) that are below the removed task's position
-        List<Task> tasksToShift = taskRepository.findByStatusAndPositionGreaterThanOrderByPositionAsc(startStatus, startPosition);
+        List<Task> tasksToShift =
+                taskRepository.findByStatusAndPositionGreaterThan(startStatus, startPosition);
 
         // Decrease the position of each of these tasks by 1 to fill the gap
         for (Task task : tasksToShift) {

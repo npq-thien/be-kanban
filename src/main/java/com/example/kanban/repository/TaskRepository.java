@@ -11,20 +11,16 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, String> {
-    @Query("SELECT t FROM Task t WHERE t.createdByUsername = :username OR t.isPublic = true")
-    List<Task> findAllByCreatedByUsernameOrPublic(@Param("username") String username);
-
     @Query("SELECT t FROM Task t WHERE t.assignedUser.id = :userId OR t.isPublic = true")
     List<Task> findAllByAssignedUsernameOrPublic(@Param("userId") String userId);
 
+    // Queries support move task function
     @Query("SELECT COALESCE(MAX(t.position), -1) FROM Task t WHERE t.status = :status")
     int findMaxPositionByStatus(@Param("status") TaskStatus status);
 
     List<Task> findByStatusAndPositionBetween(TaskStatus status, int startPosition, int endPosition);
 
-    List<Task> findByStatusOrderByPositionAsc(TaskStatus status);
-
-    @Query("SELECT t FROM Task t WHERE t.status = :status AND t.position > :position ORDER BY t.position ASC")
-    List<Task> findByStatusAndPositionGreaterThanOrderByPositionAsc(@Param("status") TaskStatus status, @Param("position") int position);
+    @Query("SELECT t FROM Task t WHERE t.status = :status AND t.position > :position")
+    List<Task> findByStatusAndPositionGreaterThan(@Param("status") TaskStatus status, @Param("position") int position);
 
 }
