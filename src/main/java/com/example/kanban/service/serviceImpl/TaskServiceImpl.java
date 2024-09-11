@@ -105,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
 
         // Only creator or assigned user can update task
         if (!task.getCreatedByUsername().equals(currentUser.getUsername())
-                && !task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
+                && (task.getAssignedUser() == null || !task.getAssignedUser().getUsername().equals(currentUser.getUsername()))) {
             throw new BusinessException("This user does not have permission to update this task.", ErrorCode.UNAUTHORIZED);
         }
 
