@@ -167,31 +167,30 @@ public class TaskServiceImpl implements TaskService {
         TaskStatus startStatus = request.getStartStatus();
         TaskStatus overStatus = request.getOverStatus();
 
-
-        //System.out.println("Position " + startPosition + ' ' + overPosition);
-
-        // Move in 1 column
+        // Move in the same column
         if (startStatus.equals(overStatus)) {
             // Task not actually moved, nothing to do
             if (overPosition == startPosition) {
                 return false;
             }
-            // Move down
+
             if (overPosition > startPosition) {
                 moveTaskDown(task, startPosition, overPosition, overStatus);
             } else {
                 moveTaskUp(task, startPosition, overPosition, overStatus);
             }
-        } else {
-            //Move to empty column
-            if (overPosition < 0) {
-                task.setPosition(0);
-                task.setStatus(overStatus);
-                taskRepository.save(task);
-                return true;
-            } else {
-                moveToTaskInAnotherColumn(task, overPosition, overStatus);
-            }
+        } else { // Move task to different column
+            int maxPositionInTargetColumn = taskRepository.findMaxPositionByStatus(overStatus);
+
+            // Assign the task the next available position
+            task.setPosition(maxPositionInTargetColumn + 1);
+            task.setStatus(overStatus);
+            taskRepository.save(task);
+
+            // Adjust positions of tasks in the start column
+            moveTasksInStartColumnAfterTaskRemoval(startPosition, startStatus);
+
+            return true;
         }
 
         return true;
@@ -226,22 +225,16 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
 
-    private void moveToTaskInAnotherColumn(Task task, int overPosition, TaskStatus overStatus) {
-        List<Task> tasksInOverColumn = taskRepository.findByStatusOrderByPositionAsc(overStatus);
+    private void moveTasksInStartColumnAfterTaskRemoval(int startPosition, TaskStatus startStatus) {
+        // Fetch all tasks in the original column (startStatus) that are below the removed task's position
+        List<Task> tasksToShift = taskRepository.findByStatusAndPositionGreaterThanOrderByPositionAsc(startStatus, startPosition);
 
-        // Update task's status to the new column and set its position
-        task.setStatus(overStatus);
-        task.setPosition(overPosition);
-
-        // Iterate over the tasks in the target column and adjust their positions
-        for (Task t : tasksInOverColumn) {
-            if (t.getPosition() >= overPosition) {
-                t.setPosition(t.getPosition() + 1); // Shift down the tasks after the new task
-                taskRepository.save(t); // Save updated task position
-            }
+        // Decrease the position of each of these tasks by 1 to fill the gap
+        for (Task task : tasksToShift) {
+            task.setPosition(task.getPosition() - 1);
         }
 
-        // Save the moved task after adjusting other task positions
-        taskRepository.save(task);
+        // Save the updated tasks back to the repository
+        taskRepository.saveAll(tasksToShift);
     }
 }

@@ -23,4 +23,8 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     List<Task> findByStatusAndPositionBetween(TaskStatus status, int startPosition, int endPosition);
 
     List<Task> findByStatusOrderByPositionAsc(TaskStatus status);
+
+    @Query("SELECT t FROM Task t WHERE t.status = :status AND t.position > :position ORDER BY t.position ASC")
+    List<Task> findByStatusAndPositionGreaterThanOrderByPositionAsc(@Param("status") TaskStatus status, @Param("position") int position);
+
 }
