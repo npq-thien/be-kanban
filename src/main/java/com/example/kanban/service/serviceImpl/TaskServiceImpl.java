@@ -47,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
         newTask.setCreatedByUsername(currentUser.getUsername());
 
         int maxPosition = taskRepository.findMaxPositionByStatus(request.getStatus());
-        newTask.setPosition(maxPosition + 1); // Set to highest position
+        newTask.setPosition(maxPosition + 1); // Set to the highest position
 
         // Set assigned user to the creator if the task is private
         if (!request.getIsPublic()) {
@@ -129,6 +129,8 @@ public class TaskServiceImpl implements TaskService {
                 .orElseThrow(() -> new BusinessException("User not found", ErrorCode.UNAUTHENTICATED));
 
         task.setAssignedUser(assignedUser);
+        // Move task to the position 0 of status
+        //moveTaskUp(task, task.getPosition(),0, task.getStatus());
         taskRepository.save(task);
 
         return taskMapper.taskToTaskResponse(task);

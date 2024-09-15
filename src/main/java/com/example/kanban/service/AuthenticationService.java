@@ -12,5 +12,4 @@ public interface AuthenticationService {
     boolean introspect(String token) throws JOSEException, ParseException;
     AuthenticationResponse authenticate(AuthenticationRequest request);
     String generateToken(User user);
-    JWTClaimsSet parseToken(String token) throws ParseException;
 }

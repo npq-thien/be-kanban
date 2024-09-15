@@ -31,6 +31,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    // Validate is token still valid or not
     @Override
     public boolean introspect(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
@@ -83,11 +84,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (JOSEException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public JWTClaimsSet parseToken(String token) throws ParseException {
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        return signedJWT.getJWTClaimsSet();
     }
 }
