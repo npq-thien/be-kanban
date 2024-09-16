@@ -40,6 +40,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private TaskPriority priority;
 
+    @OneToMany(mappedBy = "task")
+    private List<Image> imageUrls;
 
     @ManyToOne
     @JoinColumn(name = "assignedUserId", nullable = true)
@@ -47,14 +49,4 @@ public class Task {
 
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                ", name='" + name + '\'' +
-                ", isPublic=" + isPublic +
-                ", position=" + position +
-                ", status=" + status +
-                '}';
-    }
 }
