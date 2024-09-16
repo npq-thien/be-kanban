@@ -8,6 +8,7 @@ import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.dto.response.TaskResponse;
 import com.example.kanban.exception.BusinessException;
 import com.example.kanban.exception.ErrorCode;
+import com.example.kanban.service.ImageService;
 import com.example.kanban.service.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/task")
 public class TaskController {
     private final TaskService taskService;
+    private final ImageService imageService;
     private final AuditorAware<AuthUser> auditorAware;
 
 
@@ -39,6 +43,19 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @GetMapping("/{taskId}/images")
+    ResponseEntity<ApiResponse> getTaskImages(@PathVariable String taskId) {
+        List<String> imageUrls = imageService.getImageUrlsForTask(taskId);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(200)
+                .message("Fetch imageUrls for task successfully")
+                .data(imageUrls)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     @PostMapping
     ResponseEntity<ApiResponse> createTask(@RequestBody @Valid TaskCreateRequest request) {
         TaskResponse taskResponse = taskService.createTask(request);
@@ -50,6 +67,23 @@ public class TaskController {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/{taskId}/images")
+    ResponseEntity<ApiResponse> uploadImages(@PathVariable String taskId, @RequestBody List<String> imageUrls) {
+        AuthUser currentUser = auditorAware.getCurrentAuditor()
+                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
+
+        System.out.println("Received image URLs: " + imageUrls);
+
+        imageService.saveImagesForTask(taskId, imageUrls);
+
+        ApiResponse response = ApiResponse.builder()
+                .code(200)
+                .message("Images uploaded successfully")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{taskId}")

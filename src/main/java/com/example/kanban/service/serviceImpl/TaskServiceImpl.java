@@ -6,12 +6,14 @@ import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.dto.response.TaskResponse;
+import com.example.kanban.entity.Image;
 import com.example.kanban.entity.Task;
 import com.example.kanban.entity.User;
 import com.example.kanban.entity.enums.TaskStatus;
 import com.example.kanban.exception.BusinessException;
 import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.mapper.TaskMapper;
+import com.example.kanban.repository.ImageRepository;
 import com.example.kanban.repository.TaskRepository;
 import com.example.kanban.repository.UserRepository;
 import com.example.kanban.service.TaskService;
@@ -25,12 +27,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final ImageRepository imageRepository;
     private final TaskMapper taskMapper;
     private final AuditorAware<AuthUser> auditorAware;
 
