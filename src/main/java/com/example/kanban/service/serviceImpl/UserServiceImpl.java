@@ -12,12 +12,14 @@ import com.example.kanban.repository.UserRepository;
 import com.example.kanban.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -26,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserCreateRequest request) {
+        log.info("Service: createUser");
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Username already exists", ErrorCode.USER_ALREADY_EXISTS);
         }

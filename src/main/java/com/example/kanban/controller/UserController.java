@@ -6,6 +6,7 @@ import com.example.kanban.dto.response.ApiResponse;
 import com.example.kanban.dto.response.UserResponse;
 import com.example.kanban.service.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/user")
 public class UserController {

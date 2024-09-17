@@ -4,11 +4,13 @@ import com.example.kanban.entity.enums.UserRole;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateRequest {
