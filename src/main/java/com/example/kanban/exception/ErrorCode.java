@@ -17,6 +17,7 @@ public enum ErrorCode {
     // Resource Not Found
     USER_NOT_FOUND,
     TASK_NOT_FOUND,
+    IMAGE_NOT_FOUND,
 
     // Conflict Errors
     USER_ALREADY_EXISTS,

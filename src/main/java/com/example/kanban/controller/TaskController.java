@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -41,49 +42,6 @@ public class TaskController {
         ApiResponse apiResponse = taskService.getUserTasks(userId);
 
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @GetMapping("/{taskId}/images")
-    ResponseEntity<ApiResponse> getTaskImages(@PathVariable String taskId) {
-        List<String> imageUrls = imageService.getImageUrlsForTask(taskId);
-
-        ApiResponse apiResponse = ApiResponse.builder()
-                .code(200)
-                .message("Fetch imageUrls for task successfully")
-                .data(imageUrls)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PostMapping
-    ResponseEntity<ApiResponse> createTask(@RequestBody @Valid TaskCreateRequest request) {
-        TaskResponse taskResponse = taskService.createTask(request);
-
-        ApiResponse apiResponse = ApiResponse.builder()
-                .code(200)
-                .message("Create new task successfully")
-                .data(taskResponse)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    @PostMapping("/{taskId}/images")
-    ResponseEntity<ApiResponse> uploadImages(@PathVariable String taskId, @RequestBody List<String> imageUrls) {
-        AuthUser currentUser = auditorAware.getCurrentAuditor()
-                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
-
-        System.out.println("Received image URLs: " + imageUrls);
-
-        imageService.saveImagesForTask(taskId, imageUrls);
-
-        ApiResponse response = ApiResponse.builder()
-                .code(200)
-                .message("Images uploaded successfully")
-                .build();
-
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{taskId}")
@@ -196,4 +154,53 @@ public class TaskController {
         }
     }
 
+    @GetMapping("/{taskId}/images")
+    ResponseEntity<ApiResponse> getTaskImages(@PathVariable String taskId) {
+        ApiResponse apiResponse = imageService.getImageUrlsForTask(taskId);
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @DeleteMapping("/images/{imageId}")
+    ResponseEntity<ApiResponse> deleteImage(@PathVariable String imageId) {
+        imageService.deleteImage(imageId);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(200)
+                .message("Image deleted successfully")
+                .timestamp(new Date())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse> createTask(@RequestBody @Valid TaskCreateRequest request) {
+        TaskResponse taskResponse = taskService.createTask(request);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(200)
+                .message("Create new task successfully")
+                .data(taskResponse)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/{taskId}/images")
+    ResponseEntity<ApiResponse> uploadImages(@PathVariable String taskId, @RequestBody List<String> imageUrls) {
+        AuthUser currentUser = auditorAware.getCurrentAuditor()
+                .orElseThrow(() -> new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
+
+        System.out.println("Received image URLs: " + imageUrls);
+
+        imageService.saveImagesForTask(taskId, imageUrls);
+
+        ApiResponse response = ApiResponse.builder()
+                .code(200)
+                .message("Images uploaded successfully")
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
 }

@@ -10,6 +10,5 @@ import java.util.List;
 
 @Repository
 public interface ImageRepository extends JpaRepository<Image, String> {
-    @Query("SELECT i.imageUrl FROM Image i WHERE i.task.id = :taskId")
-    List<String> findAllImageUrlsByTaskId(@Param("taskId") String taskId);
+    List<Image> findAllByTaskId(String taskId);
 }

@@ -2,7 +2,6 @@ package com.example.kanban.mapper;
 
 import com.example.kanban.dto.request.TaskCreateRequest;
 import com.example.kanban.dto.request.TaskUpdateRequest;
-import com.example.kanban.dto.response.TaskDetailResponse;
 import com.example.kanban.dto.response.TaskResponse;
 import com.example.kanban.entity.Task;
 import org.mapstruct.Mapper;
@@ -16,8 +15,6 @@ public interface TaskMapper {
     @Mapping(source = "assignedUser.id", target = "assignedUserId")
     @Mapping(source = "assignedUser.displayName", target = "assignedUserDisplayName")
     TaskResponse taskToTaskResponse(Task task);
-
-    TaskDetailResponse taskToTaskDetailResponse(Task task);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdByUsername", ignore = true)
