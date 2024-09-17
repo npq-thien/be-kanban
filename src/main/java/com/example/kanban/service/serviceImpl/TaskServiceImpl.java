@@ -19,6 +19,7 @@ import com.example.kanban.repository.UserRepository;
 import com.example.kanban.service.TaskService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
@@ -161,7 +163,7 @@ public class TaskServiceImpl implements TaskService {
     public boolean moveTask(MoveTaskRequest request, AuthUser currentUser) {
         Task task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
-
+        log.info("Authen done");
         // Only creator or assigned user can move task
         if (!task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
             throw new BusinessException("This user does not have permission to move task.", ErrorCode.UNAUTHORIZED);
@@ -201,7 +203,8 @@ public class TaskServiceImpl implements TaskService {
         return true;
     }
 
-    private void moveTaskUp(Task task, int startPosition, int overPosition, TaskStatus status) {
+    @Override
+    public void moveTaskUp(Task task, int startPosition, int overPosition, TaskStatus status) {
         List<Task> tasksInRange = taskRepository.findByStatusAndPositionBetween(
                 status, overPosition, startPosition - 1
         );
@@ -216,7 +219,8 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
 
-    private void moveTaskDown(Task task, int startPosition, int overPosition, TaskStatus status) {
+    @Override
+    public void moveTaskDown(Task task, int startPosition, int overPosition, TaskStatus status) {
         List<Task> tasksBetween =
                 taskRepository.findByStatusAndPositionBetween(status, startPosition + 1, overPosition);
 
@@ -230,7 +234,8 @@ public class TaskServiceImpl implements TaskService {
         taskRepository.save(task);
     }
 
-    private void moveTasksInStartColumnAfterTaskRemoval(int startPosition, TaskStatus startStatus) {
+    @Override
+    public void moveTasksInStartColumnAfterTaskRemoval(int startPosition, TaskStatus startStatus) {
         // Fetch all tasks in the original column (startStatus) that are below the removed task's position
         List<Task> tasksToShift =
                 taskRepository.findByStatusAndPositionGreaterThan(startStatus, startPosition);
