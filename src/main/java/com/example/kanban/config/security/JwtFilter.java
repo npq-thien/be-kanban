@@ -19,7 +19,7 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final AuthenticationService authenticationService;
-    private final CustomUserDetailsService customUserDetailsService; // Use CustomUserDetailsService
+    private final CustomUserDetailsService customUserDetailsService;
 
     public JwtFilter(AuthenticationServiceImpl authenticationService, CustomUserDetailsService customUserDetailsService) {
         this.authenticationService = authenticationService;
@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String username = null;
+        String userId = null;
         String token = null;
         String authorizationHeader = request.getHeader("Authorization");
 
@@ -38,15 +38,14 @@ public class JwtFilter extends OncePerRequestFilter {
 
             try {
                 SignedJWT signedJWT = SignedJWT.parse(token);
-                username = signedJWT.getJWTClaimsSet().getSubject();
+                userId = signedJWT.getJWTClaimsSet().getSubject();
             } catch (Exception e) {
                 logger.error("JWT Token parsing failed", e);
             }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            This is AuthUser
-            UserDetails userDetails = this.customUserDetailsService.loadUserByUsername(username);
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = this.customUserDetailsService.loadUserById(userId);
 
             try {
                 if (authenticationService.introspect(token)) {

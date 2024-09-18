@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createUser(UserCreateRequest request) {
-        log.info("Service: createUser");
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Username already exists", ErrorCode.USER_ALREADY_EXISTS);
         }

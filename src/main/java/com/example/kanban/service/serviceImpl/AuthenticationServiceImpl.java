@@ -43,6 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return verified && expirationTime.after(new Date());
     }
 
+    // Check when user login
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);

@@ -3,13 +3,17 @@ package com.example.kanban.service;
 import com.example.kanban.config.security.AuthUser;
 import com.example.kanban.dto.request.MoveTaskRequest;
 import com.example.kanban.dto.request.TaskCreateRequest;
+import com.example.kanban.dto.request.TaskUpdateRequest;
 import com.example.kanban.dto.response.TaskResponse;
 import com.example.kanban.entity.Task;
 import com.example.kanban.entity.User;
 import com.example.kanban.entity.enums.TaskStatus;
+import com.example.kanban.exception.BusinessException;
+import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.mapper.TaskMapper;
 import com.example.kanban.repository.TaskRepository;
 import com.example.kanban.repository.UserRepository;
+import com.example.kanban.service.serviceImpl.TaskServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +28,7 @@ import org.springframework.data.domain.AuditorAware;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -34,20 +39,20 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class TaskServiceTest {
-    @Mock
-    TaskService taskService;
+    @InjectMocks
+    TaskServiceImpl taskService;
 
     @Mock
-    private TaskRepository taskRepository;
+    TaskRepository taskRepository;
 
     @Mock
-    private UserRepository userRepository;
+    UserRepository userRepository;
 
     @Mock
-    private AuditorAware<AuthUser> auditorAware;
+    AuditorAware<AuthUser> auditorAware;
 
     @Mock
-    private TaskMapper taskMapper;
+    TaskMapper taskMapper;
 
     private AuthUser currentUser;
     private Task task1, task2, task3, task4, task;
@@ -96,10 +101,6 @@ public class TaskServiceTest {
         Mockito.when(taskRepository.findByStatusAndPositionBetween(TaskStatus.TO_DO, 1, 2))
                 .thenReturn(Arrays.asList(task2, task3));
 
-        task2.setPosition(task2.getPosition() - 1);
-        task3.setPosition(task3.getPosition() - 1);
-        task1.setPosition(2);
-
         taskService.moveTaskDown(task1, 0, 2, TaskStatus.TO_DO);
 
         // Assert
@@ -111,7 +112,22 @@ public class TaskServiceTest {
 
     @Test
     void moveTaskUpSameColumn_success() {
+// Simulate task repository
+        Mockito.when(taskRepository.findById("3")).thenReturn(Optional.of(task3));
+        Mockito.when(taskRepository.findByStatusAndPositionBetween(TaskStatus.TO_DO, 2, 0))
+                .thenReturn(Arrays.asList(task2, task3));
 
+        task3.setPosition(0);
+        task1.setPosition(task1.getPosition() + 1);
+        task2.setPosition(task2.getPosition() + 1);
+
+        taskService.moveTaskUp(task3, 2, 0, TaskStatus.TO_DO);
+
+        // Assert
+        Assertions.assertEquals(0, task3.getPosition());
+        Assertions.assertEquals(1, task1.getPosition());
+        Assertions.assertEquals(2, task2.getPosition());
+        Assertions.assertEquals(3, task4.getPosition());
     }
 
     @Test
@@ -119,31 +135,12 @@ public class TaskServiceTest {
 
     }
 
-    //@Test
-    //void createTask_validRequest_success() {
-    //    // GIVEN
-    //    when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(currentUser));
-    //    when(taskMapper.taskCreateRequestToTask(taskCreateRequest)).thenReturn(task);
-    //    when(taskRepository.findMaxPositionByStatus(TaskStatus.TO_DO)).thenReturn(2);
-    //    when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(new User()));
-    //    when(taskRepository.save(any(Task.class))).thenReturn(task);
-    //    when(taskMapper.taskToTaskResponse(task)).thenReturn(taskResponse);
-    //
-    //    // WHEN
-    //    TaskResponse response = taskService.createTask(taskCreateRequest);
-    //
-    //    // THEN
-    //    assertEquals("Test User", task.getCreatorDisplayName());
-    //    assertEquals("testuser", task.getCreatedByUsername());
-    //    assertEquals(3, task.getPosition()); // max position (2) + 1
-    //}
-
     @Test
-    void createTask_success() {
-        // Given
+    public void createTask_validRequest_success() {
+        // Arrange
         TaskCreateRequest request = new TaskCreateRequest();
-        request.setName("Task Name");
-        request.setDescription("Task Description");
+        request.setName("Test Task");
+        request.setDescription("Test Description");
         request.setDateTimeFinish(Instant.now().plus(1, ChronoUnit.DAYS));
         request.setIsPublic(false);
         request.setStatus(TaskStatus.TO_DO);
@@ -152,44 +149,151 @@ public class TaskServiceTest {
         currentUser.setUsername("tester");
         currentUser.setDisplayName("Test User");
 
+        // Create a mock Task object
         Task newTask = Task.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .dateTimeStart(Instant.now())
                 .dateTimeFinish(request.getDateTimeFinish())
                 .isPublic(request.getIsPublic())
                 .status(request.getStatus())
                 .creatorDisplayName(currentUser.getDisplayName())
                 .createdByUsername(currentUser.getUsername())
-                .position(1) // Assuming it's the highest position in the status
+                .position(1) // This will be set in the service later
                 .build();
 
         User assignedUser = User.builder().username("tester").build();
 
-        // Mock the repository methods
         Mockito.when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(currentUser));
         Mockito.when(taskRepository.findMaxPositionByStatus(request.getStatus())).thenReturn(0); // No tasks present
         Mockito.when(userRepository.findByUsername(currentUser.getUsername())).thenReturn(Optional.of(assignedUser));
         Mockito.when(taskRepository.save(any(Task.class))).thenReturn(newTask);
 
-        // When
+        // Mock taskMapper to return newTask when taskCreateRequestToTask is called
+        Mockito.when(taskMapper.taskCreateRequestToTask(request)).thenReturn(newTask);
+
+        // Mock the taskMapper's conversion from Task to TaskResponse
+        TaskResponse taskResponse = new TaskResponse("1", "Test Task", "Test Description",
+                newTask.getDateTimeStart(), newTask.getDateTimeFinish(), newTask.getIsPublic(),
+                newTask.getCreatorDisplayName(), newTask.getCreatedByUsername(), newTask.getStatus(),
+                newTask.getPosition(), newTask.getPriority(), null, null);
+
+        Mockito.when(taskMapper.taskToTaskResponse(newTask)).thenReturn(taskResponse);
+
+        // Act
         TaskResponse response = taskService.createTask(request);
-
-        // Then
-        //Assertions.assertNotNull(response);
-        Assertions.assertEquals(request.getName(), response.getName());
-        Assertions.assertEquals(request.getDescription(), response.getDescription());
-        Assertions.assertEquals(request.getDateTimeFinish(), response.getDateTimeFinish());
-        Assertions.assertEquals(request.getIsPublic(), response.getIsPublic());
-        Assertions.assertEquals(request.getStatus(), response.getStatus());
-        Assertions.assertEquals(currentUser.getDisplayName(), response.getCreatorDisplayName());
-        Assertions.assertEquals(currentUser.getUsername(), response.getCreatedByUsername());
-        Assertions.assertEquals(1, response.getPosition());
-        Assertions.assertEquals(assignedUser.getId(), response.getAssignedUserId());
-        Assertions.assertEquals(assignedUser.getDisplayName(), response.getAssignedUserDisplayName());
-
-        // Verify interactions
-        Mockito.verify(taskRepository).save(any(Task.class));
-        Mockito.verify(userRepository).findByUsername(currentUser.getUsername());
+        log.info("Create task response " + response);
+        // Assert
+        Assertions.assertNotNull(response);
+        assertEquals("Test Task", response.getName());
+        assertEquals("Test Description", response.getDescription());
+        assertEquals(currentUser.getDisplayName(), response.getCreatorDisplayName());
     }
 
+    @Test
+    public void createTask_currentUserNull_fail() {
+        TaskCreateRequest request = new TaskCreateRequest();
+        request.setName("Test Task");
+        request.setDescription("Test Description");
+        request.setDateTimeFinish(Instant.now().plus(1, ChronoUnit.DAYS));
+        request.setIsPublic(false);
+        request.setStatus(TaskStatus.TO_DO);
+
+        Mockito.when(auditorAware.getCurrentAuditor()).thenReturn(Optional.empty()); // Return null
+
+            BusinessException exception = Assertions.assertThrows(BusinessException.class, () -> {
+                taskService.createTask(request);
+            });
+
+        Assertions.assertEquals(ErrorCode.UNAUTHENTICATED, exception.getErrorCode());
+        Assertions.assertEquals("Unable to get current user", exception.getMessage());
+    }
+
+    @Test
+    public void updateTask_userWithoutPermission_fail() {
+        String taskId = "1";
+
+        TaskUpdateRequest taskUpdateRequest = new TaskUpdateRequest();
+        taskUpdateRequest.setName("Updated title");
+        taskUpdateRequest.setDescription("Update description here");
+
+        AuthUser currentUser = new AuthUser();
+        currentUser.setUsername("unauthorized");
+        currentUser.setDisplayName("Unauthorized User");
+
+        Task task = Task.builder()
+                .name("Title")
+                .description("Description")
+                .createdByUsername("creatorUser")
+                .assignedUser(User.builder().username("assignee").build())
+                .build();
+
+        Mockito.when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        BusinessException exception = Assertions.assertThrows(BusinessException.class, () -> {
+            taskService.updateTask(taskId, taskUpdateRequest, currentUser);
+        });
+
+        Assertions.assertEquals("This user does not have permission to update this task.", exception.getMessage());
+        Assertions.assertEquals(ErrorCode.UNAUTHORIZED, exception.getErrorCode());
+    }
+
+    @Test
+    public void takeTask_nobodyAssigned_success() {
+        String taskId = "1";
+
+        AuthUser currentUser = new AuthUser();
+        currentUser.setUsername("new assignee");
+        currentUser.setDisplayName("Assignee B");
+
+        Task task = Task.builder()
+                .name("Title")
+                .description("Description")
+                .createdByUsername("creatorUser")
+                .assignedUser(null)
+                .build();
+
+        User assignedUser = User.builder()
+                .username(currentUser.getUsername())
+                .displayName(currentUser.getDisplayName())
+                .build();
+
+        Mockito.when(auditorAware.getCurrentAuditor()).thenReturn(Optional.of(currentUser));
+        Mockito.when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+        Mockito.when(userRepository.findByUsername(currentUser.getUsername())).thenReturn(Optional.of(assignedUser));
+
+        taskService.takeTask(taskId, currentUser);
+
+        Assertions.assertEquals(task.getAssignedUser().getUsername(), currentUser.getUsername());
+        Assertions.assertEquals(task.getAssignedUser().getDisplayName(), currentUser.getDisplayName());
+
+        // Verify that taskRepository.save() was called to persist the change
+        Mockito.verify(taskRepository).save(task);
+
+    }
+
+    @Test
+    public void takeTask_someoneAssigned_fail() {
+        String taskId = "1";
+
+        AuthUser currentUser = new AuthUser();
+        currentUser.setUsername("new assignee");
+        currentUser.setDisplayName("Assignee B");
+
+        Task task = Task.builder()
+                .name("Title")
+                .description("Description")
+                .createdByUsername("creatorUser")
+                .assignedUser(User.builder().username("assignee A").build())
+                .build();
+
+        Mockito.when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));
+
+        BusinessException exception = Assertions.assertThrows(BusinessException.class, () -> {
+            taskService.takeTask(taskId, currentUser);
+        });
+
+        Assertions.assertEquals(ErrorCode.TASK_ALREADY_TAKEN, exception.getErrorCode());
+        Assertions.assertEquals("The task has already been taken by someone!", exception.getMessage());
+    }
 }

@@ -22,8 +22,6 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/swagger-ui/**",  // Swagger UI page
             "/v3/api-docs/**",   // OpenAPI docs endpoint
-            //"/swagger-resources/**",
-            //"/webjars/**",
             "/api/user/**", "/api/auth/**" // Other public endpoints
     };
 
@@ -38,7 +36,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated())
-                .cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults()) // Enable CORS
                 .csrf(AbstractHttpConfigurer::disable);
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -46,6 +44,7 @@ public class SecurityConfig {
     }
 
 
+    // Enable CORS for sharing resources between FE and BE
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
