@@ -162,7 +162,6 @@ public class TaskServiceImpl implements TaskService {
     public boolean moveTask(MoveTaskRequest request, AuthUser currentUser) {
         Task task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new BusinessException("Task not found", ErrorCode.TASK_NOT_FOUND));
-        log.info("Authen done");
         // Only creator or assigned user can move task
         if (!task.getAssignedUser().getUsername().equals(currentUser.getUsername())) {
             throw new BusinessException("This user does not have permission to move task.", ErrorCode.UNAUTHORIZED);

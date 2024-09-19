@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/kanban"
+    url: "jdbc:postgresql://localhost:5432/test"
     username: postgres
     password: csuitk15
   jpa:
