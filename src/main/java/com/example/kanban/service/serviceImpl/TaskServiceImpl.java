@@ -12,7 +12,6 @@ import com.example.kanban.entity.enums.TaskStatus;
 import com.example.kanban.exception.BusinessException;
 import com.example.kanban.exception.ErrorCode;
 import com.example.kanban.mapper.TaskMapper;
-import com.example.kanban.repository.ImageRepository;
 import com.example.kanban.repository.TaskRepository;
 import com.example.kanban.repository.UserRepository;
 import com.example.kanban.service.TaskService;
@@ -27,7 +26,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -35,7 +33,6 @@ import java.util.stream.Collectors;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
-    private final ImageRepository imageRepository;
     private final TaskMapper taskMapper;
     private final AuditorAware<AuthUser> auditorAware;
 
@@ -115,6 +112,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskMapper.updateTaskFromRequest(request, task);
+        // Add position to the last of column
+        task.setPosition(taskRepository.findMaxPositionByStatus(task.getStatus()) + 1);
         Task updatedTask = taskRepository.save(task);
 
         return taskMapper.taskToTaskResponse(updatedTask);
@@ -174,12 +173,13 @@ public class TaskServiceImpl implements TaskService {
 
         // Move in the same column
         if (startStatus.equals(overStatus)) {
-            // Task not actually moved, nothing to do
+            // This case is to handle something wrong in database: case that 2 tasks have the same position
             if (overPosition == startPosition) {
-                return false;
+                int maxPositionInTargetColumn = taskRepository.findMaxPositionByStatus(overStatus);
+                task.setPosition(maxPositionInTargetColumn + 1);
+                taskRepository.save(task);
             }
-
-            if (overPosition > startPosition) {
+            else if (overPosition > startPosition) {
                 moveTaskDown(task, startPosition, overPosition, overStatus);
             } else {
                 moveTaskUp(task, startPosition, overPosition, overStatus);
