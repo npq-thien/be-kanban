@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -27,4 +28,7 @@ public class TaskResponse {
     private TaskPriority priority;
     private String assignedUserId;
     private String assignedUserDisplayName;
+
+    // List id of images belongs to task
+    private List<String> imageIds;
 }

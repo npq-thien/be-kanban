@@ -112,8 +112,10 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskMapper.updateTaskFromRequest(request, task);
-        // Add position to the last of column
-        task.setPosition(taskRepository.findMaxPositionByStatus(task.getStatus()) + 1);
+        // Add position to the last of column, if change status
+        if (!task.getStatus().equals(request.getStatus()))
+            task.setPosition(taskRepository.findMaxPositionByStatus(task.getStatus()) + 1);
+
         Task updatedTask = taskRepository.save(task);
 
         return taskMapper.taskToTaskResponse(updatedTask);
@@ -178,8 +180,7 @@ public class TaskServiceImpl implements TaskService {
                 int maxPositionInTargetColumn = taskRepository.findMaxPositionByStatus(overStatus);
                 task.setPosition(maxPositionInTargetColumn + 1);
                 taskRepository.save(task);
-            }
-            else if (overPosition > startPosition) {
+            } else if (overPosition > startPosition) {
                 moveTaskDown(task, startPosition, overPosition, overStatus);
             } else {
                 moveTaskUp(task, startPosition, overPosition, overStatus);
