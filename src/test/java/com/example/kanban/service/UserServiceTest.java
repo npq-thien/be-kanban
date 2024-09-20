@@ -80,7 +80,7 @@ public class UserServiceTest {
 
         var exception = assertThrows(BusinessException.class, () -> userService.createUser(userCreateRequest));
 
-        Assertions.assertThat(exception.getErrorCode().equals(ErrorCode.USER_ALREADY_EXISTS));
+        Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_ALREADY_EXISTS);
     }
 
 }

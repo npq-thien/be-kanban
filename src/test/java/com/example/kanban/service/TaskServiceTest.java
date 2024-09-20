@@ -176,7 +176,7 @@ public class TaskServiceTest {
         TaskResponse taskResponse = new TaskResponse("1", "Test Task", "Test Description",
                 newTask.getDateTimeStart(), newTask.getDateTimeFinish(), newTask.getIsPublic(),
                 newTask.getCreatorDisplayName(), newTask.getCreatedByUsername(), newTask.getStatus(),
-                newTask.getPosition(), newTask.getPriority(), null, null);
+                newTask.getPosition(), newTask.getPriority(), null, null, null);
 
         Mockito.when(taskMapper.taskToTaskResponse(newTask)).thenReturn(taskResponse);
 
