@@ -183,11 +183,14 @@ public class TaskServiceTest {
         // Act
         TaskResponse response = taskService.createTask(request);
         log.info("Create task response " + response);
+
         // Assert
         Assertions.assertNotNull(response);
         assertEquals("Test Task", response.getName());
         assertEquals("Test Description", response.getDescription());
         assertEquals(currentUser.getDisplayName(), response.getCreatorDisplayName());
+        assertEquals(currentUser.getDisplayName(), response.getCreatorDisplayName());
+        assertEquals(request.getIsPublic(), response.getIsPublic());
     }
 
     @Test
@@ -205,7 +208,7 @@ public class TaskServiceTest {
                 taskService.createTask(request);
             });
 
-        Assertions.assertEquals(ErrorCode.UNAUTHENTICATED, exception.getErrorCode());
+        Assertions.assertEquals(ErrorCode.USER_NOT_FOUND, exception.getErrorCode());
         Assertions.assertEquals("Unable to get current user", exception.getMessage());
     }
 

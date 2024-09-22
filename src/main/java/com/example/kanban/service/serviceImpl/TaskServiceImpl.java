@@ -40,7 +40,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskResponse createTask(TaskCreateRequest request) {
         // Get display name of current logged in user
         AuthUser currentUser = auditorAware.getCurrentAuditor().orElseThrow(() ->
-                new BusinessException("Unable to get current user", ErrorCode.UNAUTHENTICATED));
+                new BusinessException("Unable to get current user", ErrorCode.USER_NOT_FOUND));
 
         Task newTask = taskMapper.taskCreateRequestToTask(request);
 

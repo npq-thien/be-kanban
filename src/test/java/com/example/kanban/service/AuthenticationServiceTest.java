@@ -1,9 +1,7 @@
 package com.example.kanban.service;
 
 import com.example.kanban.dto.request.AuthenticationRequest;
-import com.example.kanban.dto.request.UserCreateRequest;
 import com.example.kanban.dto.response.AuthenticationResponse;
-import com.example.kanban.dto.response.UserResponse;
 import com.example.kanban.entity.User;
 import com.example.kanban.entity.enums.UserRole;
 import com.example.kanban.exception.BusinessException;
