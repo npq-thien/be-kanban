@@ -14,7 +14,9 @@ public interface TaskMapper {
 
     @Mapping(source = "assignedUser.id", target = "assignedUserId")
     @Mapping(source = "assignedUser.displayName", target = "assignedUserDisplayName")
-    @Mapping(expression = "java(task.getImageUrls().stream().map(com.example.kanban.entity.Image::getId).toList())", target = "imageIds")
+    @Mapping(expression = "java(task.getImageUrls() != null ? " +
+            "task.getImageUrls().stream().map(com.example.kanban.entity.Image::getId).toList() " +
+            ": new java.util.ArrayList<>())", target = "imageIds")
     TaskResponse taskToTaskResponse(Task task);
 
     @Mapping(target = "id", ignore = true)
