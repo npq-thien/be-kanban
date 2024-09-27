@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  kanban_db:
+    image: postgres
+    container_name: kanban_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: csuitk15
+      POSTGRES_DB: kanban-docker
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  kanban_be:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kanban_be
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://kanban_db:5432/kanban-docker
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: csuitk15
+      JWT_SIGNER_KEY: cq9rJup0g+aG3M+mbgXGLi4JW9SMO0ZJbtm2IwKSTNRFmFOXLqo5+gXrmEhJZb3/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - kanban_db
+
+volumes:
+  postgres_data:
